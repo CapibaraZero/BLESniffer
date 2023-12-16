@@ -1,0 +1,21 @@
+{
+    "name": "BLESniffer",
+    "keywords": "bluetooth, nimble, esp32",
+    "description": "A library to sniff bluetooth advertise packet",
+    "authors":
+	{
+		"name": "Andreock",
+		"maintainer": true
+	},
+	"repository":
+    {
+        "type": "git",
+        "url": "https://github.com/CapibaraZero/BLESniffer"
+    },
+    "version": "1.0",
+    "frameworks": "arduino",
+    "dependencies":
+	{
+		"h2zero/NimBLE-Arduino": "^1.4.1"
+	}
+}
