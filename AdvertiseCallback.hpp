@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PCAP.hpp"
+#include "PCAP.h"
 #include <NimBLEAdvertisedDevice.h>
 #include <NimBLEDevice.h>
 #include "NimBLEBeacon.h"

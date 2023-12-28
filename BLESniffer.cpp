@@ -20,7 +20,7 @@
 #include "NimBLEEddystoneURL.h"
 #include "NimBLEEddystoneTLM.h"
 #include "AdvertiseCallback.hpp"
-#include "PCAP.hpp"
+#include "PCAP.h"
 
 PCAP pcap = PCAP();
 
