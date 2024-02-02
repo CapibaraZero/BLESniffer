@@ -1,6 +1,6 @@
 /*
  * This file is part of the Capibara zero project(https://capibarazero.github.io/).
- * Copyright (c) 2023 Andrea Canale.
+ * Copyright (c) 2024 Andrea Canale.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ uint32_t calculate_crc24(const uint8_t *data, size_t length)
 }
 
 /* Callback code from: https://github.com/h2zero/NimBLE-Arduino/blob/release/1.4/examples/BLE_Beacon_Scanner/BLE_Beacon_Scanner.ino */
-
+#ifndef NO_SERIAL_PRINT_BLESNIFFER
 inline void AdvertisedCallback::print_ibeacon(BLEBeacon beacon) {
     Serial0.printf("Found an iBeacon!\n");
     Serial0.printf("iBeacon Frame\n");
@@ -130,8 +130,9 @@ void AdvertisedCallback::print_device(BLEAdvertisedDevice *advertisedDevice) {
 
 }
 
+#endif
 
-void AdvertisedCallback::onResult(BLEAdvertisedDevice *advertisedDevice) { 
+void AdvertisedCallback::onResult(BLEAdvertisedDevice *advertisedDevice) {
         uint32_t timestamp = now();                                         // current timestamp
         uint32_t microseconds = (unsigned int)(micros() - millis() * 1000); // micro seconds offset (0 - 999)
  
@@ -173,7 +174,7 @@ void AdvertisedCallback::onResult(BLEAdvertisedDevice *advertisedDevice) {
 	packet[size - 3] = crc & 0xff;
 	packet[size - 2] = (crc >> 8) & 0xff;
 	packet[size - 1] = (crc >> 16) & 0xff;
-
+	sniffed++;
         pcap.newPacketSD(timestamp, microseconds, sizeof(packet), packet);	// Save packet to SD card
 	
 	// Save file every 2 seconds(2000ms)
@@ -183,6 +184,8 @@ void AdvertisedCallback::onResult(BLEAdvertisedDevice *advertisedDevice) {
             last_save = millis();
         }
 
+#ifndef NO_SERIAL_PRINT_BLESNIFFER
         Serial0.printf("%s\n", advertisedDevice->getAddress().toString());
 	print_device(advertisedDevice);
+#endif
 }

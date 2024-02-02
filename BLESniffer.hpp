@@ -1,6 +1,6 @@
 /*
  * This file is part of the Capibara zero project(https://capibarazero.github.io/).
- * Copyright (c) 2023 Andrea Canale.
+ * Copyright (c) 2024 Andrea Canale.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 
 #include "NimBLEBeacon.h"
 #include <NimBLEDevice.h>
+#include "AdvertiseCallback.hpp"
 #include "FS.h"
 
 #ifndef BLESNIFFER_H
@@ -26,12 +27,17 @@ class BLESniffer
 {
 private:
     BLEScan *pBLEScan;
+    bool sniffing_in_progress = true;
+    AdvertisedCallback *scan_cb;
 public:
-    BLESniffer(const char *filename, FS SD);
+    BLESniffer(const char *filename);
     ~BLESniffer();
-    void sniff(int scanTime = 5);
+    void sniff(FS sd);
+    void sniff(FS sd, int scanTime);
     void clean();
     void stop();
+    bool is_sniffing() { return sniffing_in_progress; };
+    int get_sniffed_packets() { return scan_cb->get_sniffed(); };
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Capibara zero project(https://capibarazero.github.io/).
- * Copyright (c) 2023 Andrea Canale.
+ * Copyright (c) 2024 Andrea Canale.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@
 extern PCAP pcap;
 
 class AdvertisedCallback : public BLEAdvertisedDeviceCallbacks {
-    private:	
+    private:
+#ifndef NO_SERIAL_PRINT_BLESNIFFER
 	void print_device(BLEAdvertisedDevice *advertisedDevice);
 	inline void print_device_data(String data_type, const char *detail) { 
 	    Serial0.printf("Found %s: %s", data_type, detail);
@@ -37,9 +38,14 @@ class AdvertisedCallback : public BLEAdvertisedDeviceCallbacks {
 	inline void print_ibeacon(BLEBeacon beacon);
 	inline void print_eddystoneurl_beacon(BLEEddystoneURL beacon, std::string data);
 	inline void print_eddystonetlm_beacon(BLEEddystoneTLM beacon, std::string serviceData);
+#endif
 	void onResult(BLEAdvertisedDevice *advertisedDevice);
 	unsigned long int last_save = millis();
 	const BLEUUID eddyUUID = (uint16_t)0xfeaa;
+	int sniffed = 0;
+    public:
+	int get_sniffed() { return sniffed; };
+	void clear_sniffed() { sniffed = 0; };
 };
 
 #endif

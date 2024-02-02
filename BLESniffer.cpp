@@ -1,6 +1,6 @@
 /*
  * This file is part of the Capibara zero project(https://capibarazero.github.io/).
- * Copyright (c) 2023 Andrea Canale.
+ * Copyright (c) 2024 Andrea Canale.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +19,20 @@
 #include <NimBLEAdvertisedDevice.h>
 #include "NimBLEEddystoneURL.h"
 #include "NimBLEEddystoneTLM.h"
-#include "AdvertiseCallback.hpp"
 #include "PCAP.h"
 
 PCAP pcap = PCAP();
 
-BLESniffer::BLESniffer(const char *filename, FS SD)
+BLESniffer::BLESniffer(const char *filename)
 {
-    BLEDevice::init("");
     pBLEScan = BLEDevice::getScan(); // create new scan
-    pBLEScan->setAdvertisedDeviceCallbacks(new AdvertisedCallback());
+    scan_cb = new AdvertisedCallback();
+    pBLEScan->setAdvertisedDeviceCallbacks(scan_cb);
     pBLEScan->setActiveScan(true); // active scan uses more power, but get results faster
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99); // less or equal setInterval value
     pcap.network = 251;      // Bluetooth type
     pcap.filename = filename;
-    pcap.openFile(SD);
 }
 
 BLESniffer::~BLESniffer()
@@ -44,22 +42,27 @@ BLESniffer::~BLESniffer()
     pcap.closeFile();
 }
 
-void BLESniffer::sniff(int scanTime)
+void BLESniffer::sniff(FS sd)
 {
-    // put your main code here, to run repeatedly:
+    pcap.openFile(sd);
+    BLEScanResults foundDevices = pBLEScan->start(0, false); 
+}
+
+void BLESniffer::sniff(FS sd, int scanTime)
+{
+    pcap.openFile(sd);
     BLEScanResults foundDevices = pBLEScan->start(scanTime, false);
-    Serial0.print("Devices found: ");
-    Serial0.printf("%i", foundDevices.getCount());
-    Serial0.println("Scan done!");
 }
 
 void BLESniffer::clean()
 {
-    pBLEScan->clearResults(); // delete results fromBLEScan buffer to release memory 
+    pBLEScan->clearResults(); // delete results fromBLEScan buffer to release memory
+    scan_cb->clear_sniffed();
 }
 
 void BLESniffer::stop() {
     pBLEScan->stop();
     pBLEScan->clearResults(); // delete results fromBLEScan buffer to release memory
-    pcap.closeFile(); 
+    pcap.closeFile();
+    sniffing_in_progress = false;
 }
