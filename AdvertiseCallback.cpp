@@ -52,38 +52,40 @@ uint32_t calculate_crc24(const uint8_t *data, size_t length)
 /* Callback code from: https://github.com/h2zero/NimBLE-Arduino/blob/release/1.4/examples/BLE_Beacon_Scanner/BLE_Beacon_Scanner.ino */
 #ifndef NO_SERIAL_PRINT_BLESNIFFER
 inline void AdvertisedCallback::print_ibeacon(BLEBeacon beacon) {
-    Serial0.printf("Found an iBeacon!\n");
-    Serial0.printf("iBeacon Frame\n");
-    Serial0.printf("ID: %04X Major: %d Minor: %d UUID: %s Power: %d\n", beacon.getManufacturerId(), ENDIAN_CHANGE_U16(beacon.getMajor()), ENDIAN_CHANGE_U16(beacon.getMinor()), beacon.getProximityUUID().toString().c_str(), beacon.getSignalPower());
+    SERIAL_DEVICE.printf("Found an iBeacon!\n");
+    SERIAL_DEVICE.printf("iBeacon Frame\n");
+    SERIAL_DEVICE.printf("ID: %04X Major: %d Minor: %d UUID: %s Power: %d\n", beacon.getManufacturerId(), ENDIAN_CHANGE_U16(beacon.getMajor()), ENDIAN_CHANGE_U16(beacon.getMinor()), beacon.getProximityUUID().toString().c_str(), beacon.getSignalPower());
 }
 
 inline void AdvertisedCallback::print_eddystoneurl_beacon(BLEEddystoneURL beacon, std::string data) {
-    Serial0.println("Found an EddystoneURL beacon!");
+    SERIAL_DEVICE.printf("Found an EddystoneURL beacon!\n");
+    SERIAL_DEVICE.printf("EddystoneURL Frame\n");
+    SERIAL_DEVICE.println("Found an EddystoneURL beacon!");
     std::string bareURL = beacon.getURL();
     if (bareURL[0] == 0x00)
     {
-	Serial0.printf("DATA-->");
+	SERIAL_DEVICE.printf("DATA-->");
         for (int idx = 0; idx < data.length(); idx++)
         {
-	    Serial0.printf("0x%08X ", data[idx]);
+	    SERIAL_DEVICE.printf("0x%08X ", data[idx]);
 	}
-        Serial0.printf("\nInvalid Data");
+        SERIAL_DEVICE.printf("\nInvalid Data");
         return;
     }
-    Serial0.printf("Found URL: %s\n", beacon.getURL());
-    Serial0.printf("Decoded URL: %s\n", beacon.getDecodedURL());
-    Serial0.printf("TX power: %d\n", beacon.getPower());
+    SERIAL_DEVICE.printf("Found URL: %s\n", beacon.getURL());
+    SERIAL_DEVICE.printf("Decoded URL: %s\n", beacon.getDecodedURL());
+    SERIAL_DEVICE.printf("TX power: %d\n", beacon.getPower());
 }
 
 inline void AdvertisedCallback::print_eddystonetlm_beacon(BLEEddystoneTLM beacon, std::string serviceData) {
-    Serial0.printf("Reported battery voltage: %dmV\n", beacon.getVolt());
-    Serial0.printf("Reported temperature from TLM class: %.2fC\n", (double)beacon.getTemp());
+    SERIAL_DEVICE.printf("Reported battery voltage: %dmV\n", beacon.getVolt());
+    SERIAL_DEVICE.printf("Reported temperature from TLM class: %.2fC\n", (double)beacon.getTemp());
     int temp = (int)serviceData[5] + (int)(serviceData[4] << 8);
     float calcTemp = temp / 256.0f;
-    Serial0.printf("Reported temperature from data: %.2fC\n", calcTemp);
-    Serial0.printf("Reported advertise count: %d\n", beacon.getCount());
-    Serial0.printf("Reported time since last reboot: %ds\n", beacon.getTime());
-    Serial0.printf("%s", beacon.toString()); 
+    SERIAL_DEVICE.printf("Reported temperature from data: %.2fC\n", calcTemp);
+    SERIAL_DEVICE.printf("Reported advertise count: %d\n", beacon.getCount());
+    SERIAL_DEVICE.printf("Reported time since last reboot: %ds\n", beacon.getTime());
+    SERIAL_DEVICE.printf("%s", beacon.toString()); 
 }
 
 void AdvertisedCallback::print_device(BLEAdvertisedDevice *advertisedDevice) {
@@ -121,7 +123,7 @@ void AdvertisedCallback::print_device(BLEAdvertisedDevice *advertisedDevice) {
             }
             else if (serviceData[0] == 0x20)
             {
-                Serial0.printf("Found an EddystoneTLM beacon!");
+                SERIAL_DEVICE.printf("Found an EddystoneTLM beacon!");
                 BLEEddystoneTLM foundEddyURL = BLEEddystoneTLM();
                 foundEddyURL.setData(serviceData);
 		print_eddystonetlm_beacon(foundEddyURL, serviceData); 
@@ -185,7 +187,7 @@ void AdvertisedCallback::onResult(BLEAdvertisedDevice *advertisedDevice) {
         }
 
 #ifndef NO_SERIAL_PRINT_BLESNIFFER
-        Serial0.printf("%s\n", advertisedDevice->getAddress().toString());
+        SERIAL_DEVICE.printf("%s\n", advertisedDevice->getAddress().toString());
 	print_device(advertisedDevice);
 #endif
 }

@@ -28,12 +28,18 @@
 // Inherit it from BLESniffer
 extern PCAP pcap;
 
+#ifdef ARDUINO_NANO_ESP32
+#define SERIAL_DEVICE Serial
+#else
+#define SERIAL_DEVICE Serial0
+#endif
+
 class AdvertisedCallback : public BLEAdvertisedDeviceCallbacks {
     private:
 #ifndef NO_SERIAL_PRINT_BLESNIFFER
 	void print_device(BLEAdvertisedDevice *advertisedDevice);
 	inline void print_device_data(String data_type, const char *detail) { 
-	    Serial0.printf("Found %s: %s", data_type, detail);
+	    SERIAL_DEVICE.printf("Found %s: %s", data_type, detail);
 	};
 	inline void print_ibeacon(BLEBeacon beacon);
 	inline void print_eddystoneurl_beacon(BLEEddystoneURL beacon, std::string data);

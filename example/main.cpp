@@ -3,7 +3,7 @@
 
 void setup()
 {
-    Serial0.begin(9600);
+    Serial.begin(9600);
 }
 
 BLESniffer ble_sniffer = BLESniffer("/bluetooth.pcap", get_current_fs());
